@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${'Opération de ' + operation}">Opération</title>
+</head>
+<body>
+    <h1 th:text="${'Opération de ' + operation}">Opération</h1>
+    
+    <form th:action="@{/depot/{id}(id=${compte.id})}" method="post">
+        <input type="hidden" name="type" th:value="${operation}">
+        
+        <div>
+            <label for="montant">Montant:</label>
+            <input type="number" id="montant" name="montant" 
+                   step="0.01" min="0.01" required>
+        </div>
+        
+        <button type="submit">Valider</button>
+    </form>
+    
+    <a th:href="@{/details/{id}(id=${compte.id})}">Retour aux détails</a>
+</body>
+</html>

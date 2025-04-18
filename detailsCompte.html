@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Détails du Compte</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .account-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .balance-display {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        .positive-balance { color: #28a745; }
+        .negative-balance { color: #dc3545; }
+        .operation-section {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .transaction-history {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card account-card mb-4">
+                    <div class="card-header bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3 class="mb-0">
+                                <i class="fas fa-user-circle me-2"></i>Détails du Compte
+                            </h3>
+                            <a href="/comptes" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Retour
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div th:if="${compte}">
+                            <!-- Affichage des messages -->
+                            <div th:if="${message}" class="alert alert-success alert-dismissible fade show">
+                                <span th:text="${message}"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+                                <span th:text="${error}"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <h5 class="text-muted mb-3"><i class="fas fa-info-circle me-2"></i>Informations</h5>
+                                    <div class="mb-3">
+                                        <h6 class="text-muted mb-1">Numéro de compte</h6>
+                                        <p class="h5" th:text="${compte.id}"></p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6 class="text-muted mb-1">Titulaire</h6>
+                                        <p class="h5" th:text="${compte.titulaire}"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5 class="text-muted mb-3"><i class="fas fa-wallet me-2"></i>Solde</h5>
+                                    <div th:class="${compte.solde >= 0 ? 'positive-balance' : 'negative-balance'} + ' balance-display mb-3'"
+                                         th:text="${'€ ' + #numbers.formatDecimal(compte.solde, 1, 2, 'COMMA')}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section Opérations -->
+                            <div class="operation-section mb-4">
+                                <h5 class="text-muted mb-4"><i class="fas fa-exchange-alt me-2"></i>Opérations</h5>
+                                
+                                <!-- Formulaire de transaction -->
+                                <form th:action="@{/operation/{id}(id=${compte.id})}" method="post">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label">Type d'opération</label>
+                                            <select name="type" class="form-select" required>
+                                                <option value="depot">Dépôt</option>
+                                                <option value="retrait">Retrait</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="form-label">Montant (€)</label>
+                                            <input type="number" name="montant" class="form-control" 
+                                                   step="0.01" min="0.01" required>
+                                        </div>
+                                        <div class="col-md-3 d-flex align-items-end">
+                                            <button type="submit" class="btn btn-primary w-100">
+                                                <i class="fas fa-check me-1"></i> Valider
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Historique des transactions (optionnel) -->
+                            <div th:if="${transactions != null and !transactions.empty}">
+                                <h5 class="text-muted mb-3"><i class="fas fa-history me-2"></i>Historique</h5>
+                                <div class="transaction-history">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Type</th>
+                                                <th>Montant</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="transaction : ${transactions}">
+                                                <td th:text="${#temporals.format(transaction.date, 'dd/MM/yyyy HH:mm')}"></td>
+                                                <td>
+                                                    <span th:if="${transaction.type == 'DEPOT'}" class="badge bg-success">Dépôt</span>
+                                                    <span th:if="${transaction.type == 'RETRAIT'}" class="badge bg-danger">Retrait</span>
+                                                </td>
+                                                <td th:text="${'€ ' + #numbers.formatDecimal(transaction.montant, 1, 2, 'COMMA')}"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
