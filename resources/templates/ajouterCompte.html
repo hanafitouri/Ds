@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter un Compte</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            background-color: #fff;
+        }
+        .form-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        .form-footer {
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+            margin-top: 2rem;
+        }
+        .required-field::after {
+            content: " *";
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="form-container">
+            <div class="form-header">
+                <h2 class="text-center">
+                    <i class="fas fa-user-plus me-2"></i>Nouveau Compte Bancaire
+                </h2>
+                <p class="text-muted text-center">Remplissez le formulaire pour créer un nouveau compte</p>
+            </div>
+
+            <form th:action="@{/ajouter}" th:object="${compte}" method="post">
+                <div class="mb-4">
+                    <label for="titulaire" class="form-label required-field">Nom du titulaire</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <input type="text" class="form-control form-control-lg" id="titulaire" 
+                               th:field="*{titulaire}" placeholder="Nom complet" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="solde" class="form-label required-field">Solde initial</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-euro-sign"></i>
+                        </span>
+                        <input type="number" class="form-control form-control-lg" id="solde" 
+                               th:field="*{solde}" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    <div class="form-text">Le solde initial doit être positif ou nul</div>
+                </div>
+
+                <div class="d-grid gap-2 mb-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save me-2"></i>Créer le compte
+                    </button>
+                </div>
+            </form>
+
+            <div class="form-footer text-center">
+                <a href="/comptes" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
